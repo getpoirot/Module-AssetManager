@@ -8,8 +8,8 @@
         }
     ]
     , "require": {
-        "poirot/skeleton": "dev-master"
-        , "poirot/stream": "dev-master"
+        "poirot/skeleton": "dev-devel"
+        , "poirot/stream": "dev-devel"
     }
     , "autoload"  : {
         "psr-4": {
