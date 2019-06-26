@@ -1,0 +1,19 @@
+{
+    "name": "poirot/mod-assetmanager"
+    , "description": "Asset Management solution for Poirot Framework."
+    , "authors": [
+        {
+            "name": "Payam Naderi"
+            , "email": "naderi.payam@gmail.com"
+        }
+    ]
+    , "require": {
+        "poirot/skeleton": "dev-master"
+        , "poirot/stream": "dev-master"
+    }
+    , "autoload"  : {
+        "psr-4": {
+            "Module\\AssetManager\\": "src/"
+        }
+    }
+}
