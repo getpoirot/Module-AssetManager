@@ -1,6 +1,7 @@
 <?php
 namespace Module\AssetManager
 {
+
     use Poirot\Application\Interfaces\Sapi;
     use Poirot\Application\Interfaces\Sapi\iSapiModule;
     use Poirot\Application\Sapi\Event\EventHeapOfSapi;
@@ -12,6 +13,7 @@ namespace Module\AssetManager
     use Poirot\Std\Interfaces\Struct\iDataEntity;
 
     use Module\AssetManager\RenderStrategy\AssetRenderStrategy;
+    use Module\AssetManager\Actions\ActionsContainerOfAssetManager;
     use Module\HttpRenderer\Services\RenderStrategies\PluginsOfRenderStrategy;
 
 
@@ -21,6 +23,7 @@ namespace Module\AssetManager
         , Sapi\Module\Feature\iFeatureModuleMergeConfig
         , Sapi\Module\Feature\iFeatureModuleNestServices
         , Sapi\Module\Feature\iFeatureModuleInitSapiEvents
+        , Sapi\Module\Feature\iFeatureModuleNestActions
         , Sapi\Module\Feature\iFeatureOnPostLoadModulesGrabServices
     {
         /**
@@ -42,6 +45,8 @@ namespace Module\AssetManager
             /** @var LoaderAutoloadNamespace $nameSpaceLoader */
             $nameSpaceLoader = $baseAutoloader->loader($nameSpaceLoader);
             $nameSpaceLoader->addResource(__NAMESPACE__, __DIR__);
+
+            require_once __DIR__ . '/functions.php';
         }
 
         /**
@@ -70,6 +75,14 @@ namespace Module\AssetManager
         function initSapiEvents(EventHeapOfSapi $events)
         {
             Services::AssetManager()->attachToEvent($events);
+        }
+
+        /**
+         * @inheritdoc
+         */
+        function getActions()
+        {
+            return new ActionsContainerOfAssetManager;
         }
 
         /**

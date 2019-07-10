@@ -3,11 +3,12 @@ namespace Module\AssetManager\RenderStrategy;
 
 use Poirot\Application\Sapi\Event\EventHeapOfSapi;
 use Poirot\Events\Interfaces\iEvent;
-use Poirot\Http\HttpMessage\Response\BuildHttpResponse;
 
-use Module\AssetManager\Interfaces\iAsset;
 use Module\HttpRenderer\Interfaces\iRenderStrategy;
 use Module\HttpFoundation\Events\Listener\ListenerDispatchResult;
+
+use Module\AssetManager\Actions;
+use Module\AssetManager\Interfaces\iAsset;
 
 
 class AssetRenderStrategy
@@ -60,21 +61,7 @@ class AssetRenderStrategy
         )
             $asset->getStream()->rewind();
 
-
-        $headers = [];
-        $headers['Content-Length'] = $asset->getSize();
-        $headers['Content-Type']   = $asset->getMimetype();
-        $headers['Content-Transfer-Encoding'] = 'binary';
-
-        $builderOptions = [];
-        $builderOptions['status_code'] = 200;
-        $builderOptions['body'] = $asset->getStream();
-        $builderOptions['headers'] = $headers;
-
-        $builder  = new BuildHttpResponse($builderOptions);
-        $response = new \Poirot\Http\HttpResponse($builder);
-
-        return $response;
+        return Actions::makeResponseFromAsset($asset);
     }
 
     /**
@@ -92,7 +79,6 @@ class AssetRenderStrategy
     {
         throw new \RuntimeException('Method not Implemented.');
     }
-
 
     /**
      * @inheritdoc

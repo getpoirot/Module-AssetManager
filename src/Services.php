@@ -1,8 +1,7 @@
 <?php
 namespace Module\AssetManager
 {
-    use Module\AssetManager\Resolver\AggregateResolver;
-
+    use Module\AssetManager\Resolvers\AggregateResolver;
 
     /**
      * @method static AssetManager AssetManager()

@@ -2,15 +2,14 @@
 namespace Module\AssetManager\Resolvers;
 
 use Poirot\Std\Glob;
+use Poirot\Std\Type\StdString;
 use Poirot\Std\Traits\tConfigurable;
 use Poirot\Std\Traits\tConfigurableSetter;
 
-use function Poirot\Std\flatten;
 use Poirot\Http\Interfaces\iHttpRequest;
 
 use Module\AssetManager\Interfaces\iAssetsResolver;
 use Module\AssetManager\Assets\FilesystemAsset;
-use Module\AssetManager\Assets\HttpAsset;
 use Module\AssetManager\Interfaces\iAsset;
 
 /*
@@ -25,13 +24,14 @@ if ($resolved) {
 }
 */
 
-class GlobResolver
+class GlobFileResolver
     implements iAssetsResolver
 {
     use tConfigurable;
     use tConfigurableSetter;
 
     protected $globs;
+    protected $baseDir;
     protected $_assetsMap;
 
 
@@ -56,7 +56,15 @@ class GlobResolver
      */
     function collectAssets()
     {
-        foreach ($this->globs as $glob) {
+        foreach ($this->globs as $glob)
+        {
+            if ('' != $baseDir = $this->getBaseDir()) {
+                $glob = (string) StdString::safeJoin(DS, ...[
+                    $baseDir,
+                    StdString::of($glob)->stripPrefix($baseDir),
+                ]);
+            }
+
             foreach (Glob::glob($glob) as $path) {
                 yield $this->_resolveAssetByUri($path);
             }
@@ -73,7 +81,7 @@ class GlobResolver
      *
      * @param string|array $globs A single glob path or array of paths
      *
-     * @return GlobResolver
+     * @return GlobFileResolver
      */
     function setGlobs($globs)
     {
@@ -93,6 +101,29 @@ class GlobResolver
         return $this->globs;
     }
 
+    /**
+     * Set Base Directory
+     *
+     * @param string $dir
+     *
+     * @return $this
+     */
+    function setBaseDir($dir)
+    {
+        $this->baseDir = (string) $dir;
+        return $this;
+    }
+
+    /**
+     * Get Base Directory
+     *
+     * @return string
+     */
+    function getBaseDir()
+    {
+        return (string) $this->baseDir;
+    }
+
 
     // ..
 
@@ -109,7 +140,16 @@ class GlobResolver
 
         /** @var iAsset $asset */
         foreach ($this->collectAssets() as $asset) {
-            $this->_assetsMap[$asset->getFilename()] = $asset->getSourceUri();
+            $assetFilePath = $asset->getSourceUri();
+            if ('' != $baseDir = $this->getBaseDir()) {
+                $map = (string) StdString::of($assetFilePath)
+                    ->stripPrefix( $this->getBaseDir() );
+                $map = ltrim(str_replace('\\', '//', $map), '/');
+            } else {
+                $map = $asset->getFilename();
+            }
+
+            $this->_assetsMap[$map] = $assetFilePath;
         }
 
         return $this->_assetsMap;
@@ -124,19 +164,14 @@ class GlobResolver
      */
     protected function _resolveAssetByUri($uriPath)
     {
-        $asset = null;
-        if ( filter_var($uriPath, FILTER_VALIDATE_URL) )
-            $asset = new HttpAsset($uriPath);
-        elseif ( is_string($uriPath) )
-            $asset = new FilesystemAsset($uriPath);
-
-
-        if (! $asset instanceof iAsset)
-            throw new \InvalidArgumentException(sprintf(
-                '"%s" not recognized as asset.'
-                , flatten($uriPath)
+        if ( is_dir($uriPath) )
+            throw new \RuntimeException(sprintf(
+                'Glob Asset File Are Not Able To Recognize Assets Recursively on this directory "%s".'
+                , $uriPath
             ));
 
+
+        $asset = new FilesystemAsset($uriPath);
         return $asset;
     }
 }

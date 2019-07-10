@@ -8,7 +8,7 @@ $assetImagesMap = (new PathPrefixResolver(
     (new MapResolver())->setResources([
         '/AssetManager600x450.png' => __DIR__ . '/../www/AssetManager600x450.png',
     ])
-))->setPathPrefix('/asset/manager');
+))->setPath('/asset/manager');
 
 
 $webRootResolver = (new WebRootResolver($assetImagesMap))

@@ -40,7 +40,7 @@ class PathPrefixResolver
     {
         $uri      = $request->getTarget();
         $uriStrip = (string) StdString::of($uri)
-            ->stripPrefix( $this->getPathPrefix() );
+            ->stripPrefix( $this->getPath() );
 
         if ($uriStrip == $uri)
             // dose'nt contains the prefix
@@ -71,7 +71,7 @@ class PathPrefixResolver
      *
      * @return $this
      */
-    function setPathPrefix(string $prefixPath)
+    function setPath(string $prefixPath)
     {
         $this->pathPrefix = '/' . trim($prefixPath, '/');
 
@@ -83,7 +83,7 @@ class PathPrefixResolver
      *
      * @return string
      */
-    function getPathPrefix()
+    function getPath()
     {
         return $this->pathPrefix;
     }
