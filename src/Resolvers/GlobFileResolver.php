@@ -41,7 +41,9 @@ class GlobFileResolver
     function resolve(iHttpRequest $request)
     {
         $uri = $request->getTarget();
-        $uri = trim($uri, '/');
+        $uri = parse_url($uri);
+
+        $uri = trim(@$uri['path'], '/');
 
         $map = $this->_creatAssetsMap();
         if (! isset($map[$uri]) )

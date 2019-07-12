@@ -29,7 +29,8 @@ class DirectoryResolver
     function resolve(iHttpRequest $request)
     {
         $uri = $request->getTarget();
-        $uri = trim($uri, '/');
+        $uri = parse_url($uri);
+        $uri = trim(@$uri['path'], '/');
 
         $assetFile = $this->getDir().'/'.$uri;
         foreach ($this->getExcludePaths() as $excludePath) {

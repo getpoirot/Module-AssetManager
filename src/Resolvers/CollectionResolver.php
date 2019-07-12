@@ -214,6 +214,7 @@ class CollectionResolver
 
     private function _normalizeUri(string $uri)
     {
-        return trim($uri, '/');
+        $uri = parse_url($uri);
+        return trim(@$uri['path'], '/');
     }
 }

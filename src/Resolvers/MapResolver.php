@@ -39,6 +39,8 @@ class MapResolver
     function resolve(iHttpRequest $request)
     {
         $uri = $request->getTarget();
+        $uri = parse_url($uri);
+        $uri = trim(@$uri['path'], '/');
 
         if (! isset($this->assetMaps[$uri]) )
             return null;
