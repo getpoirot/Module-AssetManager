@@ -1,7 +1,6 @@
 <?php
 namespace Module\AssetManager
 {
-
     use Poirot\Application\Interfaces\Sapi;
     use Poirot\Application\Interfaces\Sapi\iSapiModule;
     use Poirot\Application\Sapi\Event\EventHeapOfSapi;
